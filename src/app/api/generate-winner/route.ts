@@ -1,5 +1,3 @@
-// /src/pages/api/get-winner/generate.ts
-
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
@@ -10,7 +8,27 @@ const configPath = path.join(process.cwd(), "src/data", "config.json");
 const dataPath = path.join(process.cwd(), "src/data", "data.csv");
 const winnersPath = path.join(process.cwd(), "src/data", "winners.json");
 
-function readConfig() {
+// Define types
+interface Config {
+  start_range: number;
+  end_range: number;
+  excluded_numbers: number[];
+}
+
+interface User {
+  CSP_Memb_No: number;
+  Name: string;
+}
+
+interface Winner {
+  month: string;
+  year: number;
+  name: string;
+  number: number;
+}
+
+// Function to read config file
+function readConfig(): Config | null {
   if (!fs.existsSync(configPath)) {
     console.error("❌ Config file not found.");
     return null;
@@ -24,14 +42,15 @@ function readConfig() {
   }
 }
 
-function readCSV() {
-  return new Promise<{ CSP_Memb_No: number; Name: string }[]>((resolve, reject) => {
+// Function to read CSV file
+function readCSV(): Promise<User[]> {
+  return new Promise<User[]>((resolve, reject) => {
     if (!fs.existsSync(dataPath)) {
       reject(new Error("CSV file not found"));
       return;
     }
 
-    const results: { CSP_Memb_No: number; Name: string }[] = [];
+    const results: User[] = [];
     const rl = readline.createInterface({
       input: fs.createReadStream(dataPath),
       crlfDelay: Infinity,
@@ -58,7 +77,8 @@ function readCSV() {
   });
 }
 
-async function generateRandomNumber(start: number, end: number, exclude: number[]) {
+// Function to generate random number
+async function generateRandomNumber(start: number, end: number, exclude: number[]): Promise<number> {
   const possibleNumbers = Array.from({ length: end - start + 1 }, (_, i) => start + i).filter(
     (num) => !exclude.includes(num)
   );
@@ -71,10 +91,12 @@ async function generateRandomNumber(start: number, end: number, exclude: number[
   return possibleNumbers[randomIndex];
 }
 
-function writeWinners(winners: any) {
+// Function to write winners to file
+function writeWinners(winners: Winner[]) {
   fs.writeFileSync(winnersPath, JSON.stringify(winners, null, 2), "utf-8");
 }
 
+// POST function to handle winner generation
 export async function POST() {
   try {
     const config = readConfig();
@@ -89,7 +111,12 @@ export async function POST() {
     const randomNumber = await generateRandomNumber(start_range, end_range, excluded_numbers);
     const user = data.find((row) => row.CSP_Memb_No === randomNumber);
 
-    const newWinner = { month: new Date().toLocaleString("default", { month: "long" }), year: new Date().getFullYear(), name: user?.Name || "Unknown", number: randomNumber };
+    const newWinner: Winner = {
+      month: new Date().toLocaleString("default", { month: "long" }),
+      year: new Date().getFullYear(),
+      name: user?.Name || "Unknown",
+      number: randomNumber,
+    };
     winners.push(newWinner);
 
     // Write updated winners to file
@@ -100,8 +127,11 @@ export async function POST() {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf-8");
 
     return NextResponse.json(newWinner);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("❌ Error in generate new winner:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: "An unknown error occurred" }, { status: 500 });
   }
 }

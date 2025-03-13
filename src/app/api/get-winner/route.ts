@@ -7,8 +7,16 @@ const winnersPath = path.join(process.cwd(), "src/data", "winners.json");
 
 console.log("🔹 Winners Path:", winnersPath);
 
+// Define the Winner type
+interface Winner {
+  month: string;
+  year: number;
+  name: string;
+  number: number;
+}
+
 // ✅ Ensure `winners.json` exists & is readable
-function readWinners() {
+function readWinners(): Winner[] {
   if (!fs.existsSync(winnersPath)) {
     console.warn("⚠️ winners.json not found. Creating a new one...");
     fs.writeFileSync(winnersPath, JSON.stringify([], null, 2), "utf-8");
@@ -46,8 +54,11 @@ export async function GET() {
 
     return NextResponse.json(latestWinner);  // Return the latest winner
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("❌ Error in GET handler:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: "An unknown error occurred" }, { status: 500 });
   }
 }

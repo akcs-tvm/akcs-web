@@ -10,7 +10,7 @@ const Countdown = () => {
     let targetDate = new Date(currentYear, currentMonth, 10, 0, 0, 0); // 10th of the month
 
     if (now > targetDate) {
-      targetDate = new Date(currentYear, currentMonth + 1, 10, 0, 0, 0);
+      targetDate = new Date(currentYear, currentMonth + 1, 10, 0, 0, 0); // Move to next month's 10th if past
     }
 
     const difference = targetDate.getTime() - now.getTime();
@@ -26,7 +26,7 @@ const Countdown = () => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
   const [randomNumber, setRandomNumber] = useState<number | null>(null);
   const [name, setName] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); // Properly initialize `error` state
 
   // Fetch random number when countdown hits zero
   const fetchRandomNumber = async () => {
@@ -37,12 +37,12 @@ const Countdown = () => {
       if (response.ok) {
         setRandomNumber(data.randomNumber);
         setName(data.name);
-        setError(null);
+        setError(null); // Reset error on success
       } else {
-        setError(data.error);
+        setError(data.error); // Set error if API response is not OK
       }
-    } catch (err) {
-      setError("Failed to fetch random number.");
+    } catch {
+      setError("Failed to fetch random number."); // Set error if there's a network or fetch issue
     }
   };
 
@@ -57,7 +57,7 @@ const Countdown = () => {
       }
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => clearInterval(timer); // Cleanup interval on unmount
   }, []);
 
   return (
@@ -67,13 +67,14 @@ const Countdown = () => {
         {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
       </p>
 
-      {randomNumber && (
+      {randomNumber && name && (
         <div className="mt-4">
           <p className="text-lg font-bold">Winner: {name} ({randomNumber})</p>
         </div>
       )}
 
-      {error && <p className="mt-4 text-red-500">{error}</p>}
+      {/* Display error message if there is an error */}
+      {error && <p className="mt-4 text-red-500">{error}</p>} 
     </div>
   );
 };

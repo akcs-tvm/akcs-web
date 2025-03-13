@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+
+// Define a type for the winner data
+interface Winner {
+  month: string;
+  year: number;
+  name: string;
+  number: number;
+}
 
 export default function CspLot() {
   const [countdown, setCountdown] = useState<number | null>(null);
-  const [winner, setWinner] = useState<{ month: string; year: number; name: string; number: number } | null>(null);
+  const [winner, setWinner] = useState<Winner | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Get the previous month and year
@@ -31,7 +39,7 @@ export default function CspLot() {
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
-    let nextTriggerDate = new Date(currentYear, currentMonth, 13, 0, 10, 0); // Next draw is on the 13th of the current month
+    let nextTriggerDate = new Date(currentYear, currentMonth, 13, 0, 34, 0); // Next draw is on the 13th of the current month
 
     if (now > nextTriggerDate) {
       nextTriggerDate = new Date(currentYear, currentMonth + 1, 10, 0, 0, 0); // If we're past the 13th, set next trigger date to 10th of next month
@@ -48,12 +56,8 @@ export default function CspLot() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    fetchWinner();
-  }, []);
-
-  // Fetch the winner (either this month's or last month's winner)
-  const fetchWinner = async () => {
+  // Use useCallback to memoize the fetchWinner function and prevent unnecessary re-renders
+  const fetchWinner = useCallback(async () => {
     setError(null);
     try {
       console.log("🚀 Fetching winner from API...");
@@ -72,7 +76,7 @@ export default function CspLot() {
       // If before the 10th of the current month, show last month's winner
       if (now < drawDate) {
         const { month, year } = getPreviousMonth();
-        const lastMonthWinner = data.find((w: any) => w.month === month && w.year === year);
+        const lastMonthWinner = data.find((w: Winner) => w.month === month && w.year === year);
         if (lastMonthWinner) {
           setWinner(lastMonthWinner);
           return;
@@ -81,11 +85,11 @@ export default function CspLot() {
 
       // Otherwise, show this month's winner
       setWinner(data);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      setError((error as Error).message);
       console.error("❌ Error fetching winner:", error);
     }
-  };
+  }, []); // Dependencies should be an empty array since we're calling this function explicitly
 
   // Generate a new winner once the countdown ends
   const generateNewWinner = async () => {
@@ -102,8 +106,8 @@ export default function CspLot() {
 
       console.log("✅ New winner generated:", data);
       setWinner(data);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      setError((error as Error).message);
       console.error("❌ Error generating new winner:", error);
     }
   };
@@ -114,6 +118,10 @@ export default function CspLot() {
       setCountdown(calculateCountdown()); // Reset the countdown for the next draw
     }
   }, [countdown]);
+
+  useEffect(() => {
+    fetchWinner();
+  }, [fetchWinner]); // Include fetchWinner as a dependency to prevent re-fetching on re-renders
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8">

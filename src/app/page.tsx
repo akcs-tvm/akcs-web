@@ -11,18 +11,24 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800">
+    <div className="flex flex-col items-center justify-center min-h-screen relative">
+      {/* Background animation */}
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 opacity-50 animate-pulse"
+        aria-hidden="true"
+      ></div>
+
       {/* Maintenance message container */}
       <div
         className={`${
           isVisible ? "opacity-100" : "opacity-0"
-        } transition-opacity duration-1000 ease-in-out`}
+        } transition-opacity duration-1000 ease-in-out z-10 relative`}
       >
         <h1 className="text-5xl text-white font-bold animate-pulse mb-6">
           Maintenance in Progress
         </h1>
         <p className="text-xl text-gray-300 mb-6">
-          We're currently working on some updates. Please check back soon.
+          We&apos;re currently working on some updates. Please check back soon.
         </p>
         
         <div className="animate-bounce">
@@ -42,12 +48,6 @@ export default function HomePage() {
           </svg>
         </div>
       </div>
-
-      {/* Background animation */}
-      <div
-        className="absolute inset-0 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 opacity-50 animate-pulse"
-        aria-hidden="true"
-      ></div>
     </div>
   );
 }
