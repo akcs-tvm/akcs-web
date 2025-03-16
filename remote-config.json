@@ -1,0 +1,16 @@
+{
+  "parameters": {
+    "winners": {
+      "defaultValue": {
+        "value": "[{ \"month\": \"January\",\"year\": 2025,\"name\": \"Amit Sharma\",\"number\": 101},{\"month\": \"February\",\"year\": 2025,\"name\":\"Priya Verma\",\"number\":205},{\"month\":\"March\",\"year\": 2025,\"name\":\"SURESH R\",\"number\": 280}]"
+      },
+      "valueType": "STRING"
+    },
+    "config": {
+      "defaultValue": {
+        "value": "{ \"start_range\": 100, \"end_range\": 439, \"excluded_numbers\": []}"
+      },
+      "valueType": "STRING"
+    }
+  }
+}

@@ -7,8 +7,16 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {onRequest} from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+import { onRequest } from "firebase-functions/v2/https";
+// import * as logger from "firebase-functions/logger";
+import { generateWinner } from './generate-winner'; // Ensure the path is correct
+
+import { getWinner } from "./get-winner";
+// export const testFunction = onRequest((req, res) => {
+//     res.send("Test function is working!");
+//   });
+export const generateWinnerFunction = onRequest(generateWinner);
+export const getWinnerFunction = onRequest(getWinner);
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
