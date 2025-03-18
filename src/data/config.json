@@ -1,0 +1,9 @@
+{
+  "start_range": 100,
+  "end_range": 439,
+  "excluded_numbers": [
+    105,
+    192,
+    280
+  ]
+}
