@@ -5,6 +5,12 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/generate-csp-winner",
+        "destination": "/generate-csp-winner/index.html"
+      }
     ]
   },
   "emulators": {
