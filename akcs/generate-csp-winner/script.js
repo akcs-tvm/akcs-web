@@ -1,5 +1,47 @@
+// 🔐 Firebase Config
+const firebaseConfig = {
+    apiKey: "AIzaSyCMRH7LV6U1hSogeMDam40eq2mFBDaN3iQ",
+    authDomain: "akcs-3d467.firebaseapp.com",
+    projectId: "akcs-3d467",
+    storageBucket: "akcs-3d467.firebasestorage.app",
+    messagingSenderId: "162264045585",
+    appId: "1:162264045585:web:fb9887129c93f124d939b0",
+    measurementId: "G-1T6FMTEESE"
+  };
+
+// 🔁 Initialize Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+} else {
+    firebase.app(); // if already initialized, use that one
+}
+
+const auth = firebase.auth();
+
 document.getElementById('getRandomNumber').addEventListener('click', async () => {
     try {
+        // 🔍 Check if user is already signed in
+        let user = auth.currentUser;
+
+        if (!user) {
+            // 👇 Prompt user for email & password if not signed in
+            const email = prompt("Enter your email:");
+            const password = prompt("Enter your password:");
+
+            if (!email || !password) {
+                alert("Email and password are required!");
+                return;
+            }
+
+            // 🔐 Sign in with Firebase
+            const result = await auth.signInWithEmailAndPassword(email, password);
+            user = result.user;
+            console.log("Signed in as:", user.email);
+        }
+
+        // 🪪 Get Firebase token
+        const token = await user.getIdToken();
+
         // Hide button and heading
         document.getElementById('getRandomNumber').style.display = 'none';
         document.getElementById('mainHeading').style.display = 'none';
@@ -15,15 +57,14 @@ document.getElementById('getRandomNumber').addEventListener('click', async () =>
         }
 
         await delay(1000); // Extra delay
-
-        // Hide countdown
         countdownElement.style.display = 'none';
 
-        // ✅ Make API POST request
+        // ✅ Make API POST request with Firebase token
         const response = await fetch('https://generatewinnerfunction-62y63fuseq-uc.a.run.app', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // 👈 Secure access
             }
         });
 
@@ -31,11 +72,8 @@ document.getElementById('getRandomNumber').addEventListener('click', async () =>
             throw new Error('Failed to fetch winner');
         }
 
-        const data = await response.json(); // Ensure JSON is parsed correctly
+        const data = await response.json();
 
-        console.log("API Response:", data); // Debugging: Log API response
-
-        // Ensure API response has expected fields
         if (!data.month || !data.year || !data.name || !data.number) {
             throw new Error("Invalid response format");
         }
@@ -55,7 +93,7 @@ document.getElementById('getRandomNumber').addEventListener('click', async () =>
     }
 });
 
-// Function to create a delay using Promises
+// ⏱ Delay helper
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
