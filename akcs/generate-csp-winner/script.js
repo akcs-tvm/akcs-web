@@ -33,13 +33,12 @@ const firebaseConfig = {
     try {
       const user = auth.currentUser;
   
-      // 🔐 Not signed in? Redirect to login page
+      // 🔐 Not signed in? Redirect to login with redirect param
       if (!user) {
-        // Save current path to redirect after login
-        sessionStorage.setItem("redirectAfterLogin", window.location.pathname);
-        console.log("First Value to:", sessionStorage.getItem("redirectAfterLogin"));
-
-        window.location.href = "/login-page/index.html";
+        const redirectPath = window.location.pathname;
+        const loginURL = `/login-page/index.html?redirect=${encodeURIComponent(redirectPath)}`;
+        console.log("Redirecting unauthenticated user to:", loginURL);
+        window.location.href = loginURL;
         return;
       }
   

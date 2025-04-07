@@ -1,13 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Protected Page</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/login-page/styles.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    #loader {
+      display: none;
+      font-size: 1rem;
+      color: #555;
+    }
+
+    button {
+      background-color: #ff5252;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      color: white;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    button:hover {
+      background-color: #e53935;
+    }
+  </style>
 </head>
 <body>
-  <div class="login-container">
+  <div id="loader">🔄 Loading...</div>
+
+  <div id="content" class="login-container" style="display: none;">
     <h2>Welcome 🎉</h2>
     <p>This is a protected page.</p>
     <button id="logoutBtn">Logout</button>
@@ -34,22 +76,35 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
+    const loader = document.getElementById("loader");
+    const content = document.getElementById("content");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // Show loader initially
+    loader.style.display = "block";
+
     onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "./";
+      loader.style.display = "none";
+
+      if (user) {
+        // Authenticated
+        content.style.display = "block";
+      } else {
+        // Not authenticated — save redirect path and go to login
+        sessionStorage.setItem("redirectAfterLogin", window.location.pathname);
+        window.location.href = "/login-page/";
       }
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-    auth.onAuthStateChanged(async (user) => {
-        if (!user) {
-        const currentPath = window.location.pathname;
-        sessionStorage.setItem("redirectAfterLogin", currentPath);
+    // 🔐 Logout functionality
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
         window.location.href = "/login-page/";
-        }
+      } catch (err) {
+        console.error("Logout failed", err);
+      }
     });
-    });
-
   </script>
 </body>
 </html>
