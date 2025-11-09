@@ -76,7 +76,7 @@ async function generateRandomNumber(start: number, end: number, exclude: number[
 // Function to fetch user data from Firestore using CSP_Memb_No as the document ID
 async function getUserFromFirestore(cspNumber: number) {
   try {
-    const userDocRef = db.collection("csp-tvm-2025").doc(String(cspNumber));
+    const userDocRef = db.collection("csp-tvm-2026").doc(String(cspNumber));
     console.log("📌 Document Reference:", userDocRef.path); // Logs the Firestore path
 
     const userDoc = await userDocRef.get();
