@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSP Winner Lot</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSP Winner Lot</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- ✅ Firebase SDKs (Compat Version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 </head>
 <body>
-    <div class="container">
-        <img id="yourImage" src="logo.jpeg" alt="Your Logo">
-        <h1 id="mainHeading">Click to Generate the Winner</h1>
-        <button id="getRandomNumber">Generate</button>
-        <p id="countdown" style="display: none;"></p>
-        <div id="result" style="display: none;"></div>
-    </div>
+  <div class="container">
+    <img id="yourImage" src="logo.jpeg" alt="Your Logo">
+    <h1 id="mainHeading">Let the Countdown Begin!</h1>
+    <button id="getRandomNumber">Go</button>
+    <p id="countdown" style="display: none;"></p>
+    <div id="result" style="display: none;"></div>
+  </div>
 
-    <script src="script.js"></script>
+  <!-- ✅ Load your custom script after Firebase is ready -->
+  <script src="script.js"></script>
 </body>
 </html>
